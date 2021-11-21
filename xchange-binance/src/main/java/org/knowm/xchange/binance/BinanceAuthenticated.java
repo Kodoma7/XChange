@@ -73,6 +73,25 @@ public interface BinanceAuthenticated extends Binance {
       throws IOException, BinanceException;
 
   @POST
+  @Path("api/v3/order")
+  BinanceNewOrder newQuoteOrder(
+          @FormParam("symbol") String symbol,
+          @FormParam("side") OrderSide side,
+          @FormParam("type") OrderType type,
+          @FormParam("timeInForce") TimeInForce timeInForce,
+          @FormParam("quantity") BigDecimal quantity,
+          @FormParam("quoteOrderQty") BigDecimal quoteOrderQty,
+          @FormParam("price") BigDecimal price,
+          @FormParam("newClientOrderId") String newClientOrderId,
+          @FormParam("stopPrice") BigDecimal stopPrice,
+          @FormParam("icebergQty") BigDecimal icebergQty,
+          @FormParam("recvWindow") Long recvWindow,
+          @FormParam("timestamp") SynchronizedValueFactory<Long> timestamp,
+          @HeaderParam(X_MBX_APIKEY) String apiKey,
+          @QueryParam(SIGNATURE) ParamsDigest signature)
+          throws IOException, BinanceException;
+
+  @POST
   @Path("api/v3/order/test")
   /**
    * Test new order creation and signature/recvWindow long. Creates and validates a new order but

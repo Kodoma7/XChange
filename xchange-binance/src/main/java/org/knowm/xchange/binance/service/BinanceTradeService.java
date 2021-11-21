@@ -101,6 +101,10 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
     return placeOrder(OrderType.MARKET, mo, null, null, null);
   }
 
+  public String placeMarketQuoteOrder(MarketOrder mo) throws IOException {
+    return placeQuoteOrder(OrderType.MARKET, mo, null, null, null);
+  }
+
   @Override
   public String placeLimitOrder(LimitOrder limitOrder) throws IOException {
     TimeInForce tif = timeInForceFromOrder(limitOrder).orElse(TimeInForce.GTC);
@@ -153,6 +157,31 @@ public class BinanceTradeService extends BinanceTradeServiceRaw implements Trade
               getClientOrderId(order),
               stopPrice,
               null);
+      return Long.toString(newOrder.orderId);
+    } catch (BinanceException e) {
+      throw BinanceErrorAdapter.adapt(e);
+    }
+  }
+
+  private String placeQuoteOrder(
+          OrderType type, MarketOrder order, BigDecimal limitPrice, BigDecimal stopPrice, TimeInForce tif)
+          throws IOException {
+    try {
+      Long recvWindow =
+              (Long)
+                      exchange.getExchangeSpecification().getExchangeSpecificParametersItem("recvWindow");
+      BinanceNewOrder newOrder =
+              newQuoteOrder(
+                      order.getCurrencyPair(),
+                      BinanceAdapters.convert(order.getType()),
+                      type,
+                      tif,
+                      null,
+                      order.getQuoteAmount(),
+                      limitPrice,
+                      getClientOrderId(order),
+                      stopPrice,
+                      null);
       return Long.toString(newOrder.orderId);
     } catch (BinanceException e) {
       throw BinanceErrorAdapter.adapt(e);

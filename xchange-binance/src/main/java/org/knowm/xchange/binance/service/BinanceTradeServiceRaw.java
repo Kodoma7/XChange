@@ -83,6 +83,42 @@ public class BinanceTradeServiceRaw extends BinanceBaseService {
         .call();
   }
 
+  public BinanceNewOrder newQuoteOrder(
+          CurrencyPair pair,
+          OrderSide side,
+          OrderType type,
+          TimeInForce timeInForce,
+          BigDecimal quantity,
+          BigDecimal quoteOrderQty,
+          BigDecimal price,
+          String newClientOrderId,
+          BigDecimal stopPrice,
+          BigDecimal icebergQty)
+          throws IOException, BinanceException {
+    return decorateApiCall(
+            () ->
+                    binance.newQuoteOrder(
+                            BinanceAdapters.toSymbol(pair),
+                            side,
+                            type,
+                            timeInForce,
+                            quantity,
+                            quoteOrderQty,
+                            price,
+                            newClientOrderId,
+                            stopPrice,
+                            icebergQty,
+                            getRecvWindow(),
+                            getTimestampFactory(),
+                            apiKey,
+                            signatureCreator))
+            .withRetry(retry("newOrder", NON_IDEMPOTENT_CALLS_RETRY_CONFIG_NAME))
+            .withRateLimiter(rateLimiter(ORDERS_PER_SECOND_RATE_LIMITER))
+            .withRateLimiter(rateLimiter(ORDERS_PER_DAY_RATE_LIMITER))
+            .withRateLimiter(rateLimiter(REQUEST_WEIGHT_RATE_LIMITER))
+            .call();
+  }
+
   public void testNewOrder(
       CurrencyPair pair,
       OrderSide side,

@@ -24,6 +24,8 @@ public class MarketOrder extends Order {
 
   private static final long serialVersionUID = -3393286268772319210L;
 
+  private BigDecimal quoteAmount;
+
   /**
    * @param type Either BID (buying) or ASK (selling)
    * @param originalAmount The amount to trade
@@ -127,6 +129,16 @@ public class MarketOrder extends Order {
   public MarketOrder(OrderType type, BigDecimal originalAmount, Instrument instrument) {
 
     super(type, originalAmount, instrument, "", null);
+  }
+
+  public MarketOrder(OrderType type, BigDecimal originalAmount, BigDecimal quoteAmount, Instrument instrument) {
+
+    super(type, originalAmount, instrument, "", null);
+    this.quoteAmount = quoteAmount;
+  }
+
+  public BigDecimal getQuoteAmount() {
+    return quoteAmount;
   }
 
   @JsonPOJOBuilder(withPrefix = "")
